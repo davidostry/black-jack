@@ -1,8 +1,9 @@
 import express from 'express';
+import { createPlayer } from '../CTRLS/players.js'
 
 const router = express.Router()
 
-// router.post("/start-game")
+router.post("/start-game", createPlayer)
 
 // router.post("/start-round")
 
