@@ -4,13 +4,13 @@ export async function logger(req, res, next){
     next()
 }
 
-export async function errorHandeling(error, req, res, next){
+export function errorHandeling(error, req, res, next){
 
   if (error.statusCode) {
 
-        return res.status(err.statusCode).json({
+        return res.status(error.statusCode).json({
             success: false,
-            message: err.message
+            message: error.message
         });}
        
     console.error("CRITICAL SERVER ERROR:", error);
@@ -22,7 +22,7 @@ export async function errorHandeling(error, req, res, next){
   }
 
 
-export async function createError(message, statusCode){
+export function createError( statusCode, message){
     const error = new Error(message);
     error.statusCode = statusCode;
     return error;
