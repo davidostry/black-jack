@@ -12,3 +12,7 @@ export async function createRound(newRound) {
 
     return { ...newRound, id }
 }
+
+export async function getRound(playerId) {
+    return await collection.findOne({ playerId: playerId, status: "in progress" })
+}

@@ -31,4 +31,16 @@ export async function getPlayer(x_player_id) {
         throw error;
     }
 }
+export async function updatePlayerChips(playerId, chips) {
+    const { data, error } = await dbClient
+        .from("players")
+        .update({ chips: chips })
+        .eq("id", playerId);
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
+}
 

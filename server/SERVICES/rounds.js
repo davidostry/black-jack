@@ -1,10 +1,10 @@
-import { createRound } from '../DAL/rounds.js';
-import { getPlayer } from '../DAL/players.js'
+import { createRound, getRound } from '../DAL/rounds.js';
+import { getPlayer, updatePlayerChips } from '../DAL/players.js'
 import { createError } from '../MIDDLEWARE/basic.js'
 
 function getCard() {
 
-    const cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "j", "q", "k", "a"]
+    const cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
     const suits = ["hearts", "diamonds", "clubs", "spades"]
 
     const card = Math.floor(Math.random() * cards.length)
@@ -12,16 +12,17 @@ function getCard() {
     return { rank: cards[card], suit: suits[suit] }
 }
 
+
 export async function addRound(playerId, bet) {
 
     try {
         const player = await getPlayer(playerId)
-
+        const round = await getRound(playerId)
 
         if (!player) {
             throw createError(404, "id is not exist")
         }
-        if (player.status === "in_progress") {
+        if (round) {
             throw createError(400, "player already in progress")
         }
 
@@ -33,20 +34,29 @@ export async function addRound(playerId, bet) {
             throw createError(400, "not enough money for this bet")
         }
 
+        const chips = player.chips - bet
+        await updatePlayerChips(playerId,chips)
+        const  playerCards = [getCard(), getCard()]
+        const dealerCards = [getCard(), getCard()]
+
         const newRound = {
             bet,
             playerId,
-            playerCards: getCard(),
-            dealerCards: getCard(),
+            playerCards,
+            dealerCards,
             status: "in progress",
-            createdAt: new Date
+            createdAt: new Date()
         }
-        return await createRound(newRound)
-
-
-
-
-
+        const result = await createRound(newRound)
+        console.log(result);
+        
+        const response = {
+            roundId: result.id,
+            playerCards,
+            dealerCards,
+            chips
+        }
+        return response
     } catch (error) {
         throw error
     }
@@ -77,4 +87,6 @@ export function calculate(cards) {
 
     return sum;
 }
+
+
 
