@@ -9,7 +9,7 @@ function getCard() {
 
     const card = Math.floor(Math.random() * cards.length)
     const suit = Math.floor(Math.random() * suits.length)
-    return {rank: cards[card], suit: suits[suit]}
+    return { rank: cards[card], suit: suits[suit] }
 }
 
 export async function addRound(playerId, bet) {
@@ -50,5 +50,31 @@ export async function addRound(playerId, bet) {
     } catch (error) {
         throw error
     }
+}
+
+export function calculate(cards) {
+    let sum = 0;
+    let aces = 0;
+
+    cards.forEach(card => {
+        if (["J", "Q", "K"].includes(card.rank)) {
+            sum += 10;
+        }
+        else if (card.rank === "A") {
+            sum += 11;
+            aces++;
+        }
+        else {
+            sum += Number(card.rank);
+        }
+    });
+
+
+    while (sum > 21 && aces > 0) {
+        sum -= 10;
+        aces--;
+    }
+
+    return sum;
 }
 
